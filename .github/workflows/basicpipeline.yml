@@ -11,7 +11,10 @@ name: Java CI with Maven
 on:
   push:
     branches: [ "main" ]
-
+# permissions:
+#       checks: write
+#       contents: read
+#       packages: write
 jobs:
   Setup:
 
@@ -47,8 +50,7 @@ jobs:
       checks: write
       contents: read
       packages: write
-      
-      
+        
     steps:
     - run: echo should run unit tests
     - uses: actions/checkout@v4
@@ -58,6 +60,39 @@ jobs:
       uses: EnricoMi/publish-unit-test-result-action@v2
       with:
        files: target/surefire-reports/*.xml
+  CodeCoverage:
+    runs-on: ubuntu-latest
+    needs: UnitTesting
+    permissions:
+      checks: write
+      contents: read
+      packages: write
+        
+    steps:
+    - run: echo should run code coverage
+    - uses: actions/checkout@v4
+    - name: Maven CC
+      run: mvn -X org.jacoco:jacoco-maven-plugin:report
+  War:
+    runs-on: ubuntu-latest
+    needs: CodeCoverage
+    permissions:
+      checks: write
+      contents: read
+      packages: write
+        
+    steps:
+    - run: echo should run war
+    - uses: actions/checkout@v4
+    - name: Maven war
+      run: mvn -X war:war
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: webapp
+        path: target/*.war
+  
+    
      
 
 
