@@ -60,8 +60,7 @@ jobs:
       with:
         java-version: '11'
         distribution: 'temurin'
-        server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
-        settings-path: ${{ github.workspace }} # location
+    
     - name: SonarCloud scan
       env:
         github-token: ${{ secrets.GH_TOKEN }}
